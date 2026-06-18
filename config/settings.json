@@ -1,0 +1,8 @@
+{
+    "cache_threshold_seconds": 12600,
+    "data_sources": {
+        "active_satellites": "https://celestrak.org/NORAD/elements/gp.php?GROUP=active&FORMAT=csv",
+        "cosmos_debris": "https://celestrak.org/NORAD/elements/gp.php?GROUP=cosmos-2251-debris&FORMAT=csv",
+        "iridium_debris": "https://celestrak.org/NORAD/elements/gp.php?GROUP=iridium-33-debris&FORMAT=csv"
+    }
+}
