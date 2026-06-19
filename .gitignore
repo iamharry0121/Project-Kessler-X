@@ -1,2 +1,4 @@
 plan.txt
 data/
+.vscode/
+__pycache__/
