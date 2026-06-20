@@ -1,0 +1,114 @@
+This is an explanation of the concepts and the 'why' in certain things i did in this project
+Before continuining, below is a key to better understand certain notations i put in
+Key:
+    '/.../': italics, it indicates a reference to a definition in the pre section below
+    ..._...: usually indicates subscripts because unicode sadly dont support all characters as subscripts for the sake of ppl's understandings, in some places, i have used proper subscripts, in others, please look for the underscores
+
+### 1. Terms and Concepts
+
+pre 0. orbital period: the time it takes a planet or object to complete one full orbit around the sun or other object 
+pre 1. equatorial plane: the imaginary flat disk formed by extending the Earth's equator out into deep space. It serves as the primary reference "floor" for measuring how tilted an orbit is
+pre 2. orbit path: most orbits are elliptical in nature, not circular
+pre 3. mean motion: how many times an object or a satellite loops Earth or another object per day
+pre 4. periapsis: the point where the object is closest to the center of the earth
+pre 5. apoapsis: the point where the object is the farthest from the center of the earth
+pre 6. major axis: the distance from the periapsis and apoapsis
+pre 7. kepler's first law (law of ellipses): the orbiting object dont orbit in circles (also referenced in /orbit path/), a circle has a center point, but ellipses do not, they have foci, and the central body sits at one of these foci
+pre 8. kepler's second law (law of equal areas): planets dont move at constant speeds, changing speeds based on the proximity to sun, closer = faster, farther = slower, using that, if you were to connect a line from the sun to the planet, the line sweeps out an equal amount of area in an  equal amount of time
+pre 9. kepler's third law (law of harmonies):the mathematical relationship between the planet's distance (a^3) from the sun and it orbital period (P^2)
+pre 10. ascending node: the specific point where the satellite crosses the /equatorial plane/ while travelling from the southern to northern hemisphere
+pre 11. reference direction (first point of Aries): an imaginary fixed anchoring line in space used by astronomers as a '0 degree starting line' to measure angles
+
+1. Semi-Major Axis of Orbit (a)
+
+The distance from the geometric center of the elliptical orbit to the longer ends of the orbit 
+How to derive the Semi-Major Axis: using /Keplers Third Law (law of harmonies)/ based on the satellite's /mean motion/
+
+tl;dr: The average size of the orbit. If you took the oval path and averaged out how far the satellite is from Earth, this is that number. Bigger number = bigger loop = takes longer to go around Earth.
+
+2. Semi-Minor Axis of Orbit (b)
+
+The distance from the geometric center of the elliptical orbit to the closer ends of the orbit
+
+tl;dr: It’s the shortest distance across the oval.
+
+3. Eccentricity (e)
+
+A measurement between 0-1 which includes decimal numbers the describe how stretched out the orbit is
+This can be directly connected to the /major axis length/
+
+tl;dr: How much of an oval it is. If it’s 0, it’s a perfect circle. If it’s 1, it looks like a super long, stretched out rubber band.
+
+4. Inclination (i)
+
+The tilt of the orbit relative to the earth's /equatorial plane/ (pre 1)
+
+tl;dr: 0 degrees means the satellite is flying directly over the equator like a belt. 90 degrees means it's flying over the North and South Poles.
+
+5. Right Ascension of the Ascending Node (omega or RAAN)
+
+The angle measured along the /equatorial plane/ from the /reference direction/ to the /ascending node/
+
+tl;dr: Imagine holding a hula-hoop around a basketball and tilting it 45 degrees. Now, spin your body around while holding that tilt. RAAN tells you which way that tilt is pointing in the room using a fixed star as a compass mark.
+
+6. Arguement of Perigree (w)
+
+The angle measured along the /orbit path/ from the /ascending node/ to the /periapsis/
+
+tl;dr: Where the closest point of the orbit is located. Since the orbit is an oval, it has a "close point" (periapsis) and a "far point" (apoapsis). This angle tells you if that close point is happening over the North Pole, the South Pole, or right over the equator. It basically rotates the oval within its own flat plane.
+
+7. True Anamoly (v or f)
+
+The angle measured from the /periapsis/ to the satellite's current position along the /orbit path/
+
+tl;dr: Where the satellite is right now. While parameters 1 through 6 stay the same to define the shape and tilt of the highway in space, the True Anomaly changes every single millisecond. It's the literal GPS marker telling you exactly where the space debris is sitting on that highway at this exact moment.
+
+
+### 2. The Math Engine (The 'Why' Behind the Physics)
+
+Equation 1: Deriving the Semi-Major Axis (a) via /Kepler's Third law/
+
+When raw satellite data is fetched, it doesent give us the size of the orbit (a) directly. Instead, it gives us the /mean motion/ (n), which is how many times the satellite loops Earth per day. We use /Kepler's Third Law/ to calculate the orbit's average radius from that speed.
+
+The Formal Math:
+
+First, we convert the /mean motion/ (n) from 'loops per day' into radians per second. Then, we use the standard gravitiational parameter of Earth (mu = 3.986004418 * 10^14m^3/s^2) to solve for a (i have put the LaTeX format equation below):
+
+LaTeX Format Equation: $$a = \sqrt[3]{\frac{\mu}{n^2}}$$
+
+tl;dr: The faster a satellite loops Earth, the closer it must be to the ground. Kepler’s Third Law proves there is a strict mathematical relationship between an object's distance from Earth and how long it takes to complete an orbit. By telling the code how fast the space debris is moving, this equation spits out exactly how large its orbital loop is.
+
+Equation 2: Calculating Eccentricity (e)
+
+Eccentricity tells us how stretched out the orbit is. If we know the satellite's closest distance to Earth's center (/periapsis/) and its farthest distance (/apoapsis/), we can calculate exactly how oval-shaped the orbit is.
+
+The Formal Math:
+
+The formula for Eccentricity is the ratio of the distance between the two foci to the length of the major axis. It can be dervied directly from the apoapsis (rₐ) and periapsis (rₚ) distances, to solve for e (i have put the LaTeX format equation below):
+
+LaTeX Format Equation: $$e = \frac{r_a - r_p}{r_a + r_p}$$
+
+Alternatively, if you already know the Semi-Major Axis (a) and the Semi-Minor Axis (b), you can find it using this geometric relationship:
+
+LaTeX Format Equation: $$e = \sqrt{1 - \frac{b^2}{a^2}}$$
+
+tl;dr: We are comparing the difference between the orbit's highest point and lowest point. If a satellite's highest point (rₐ) and lowest point (rₚ) are exactly the same (say, both are 7,000 km from the center of the Earth), the top of our fraction becomes 7000 - 7000 = 0. That means e = 0, giving us a perfect circle.
+
+Equation 3: 3D Cartesian Coordinate Mapping (X,Y,Z)
+
+Once the code knows the shape of the orbit (from a and e) and where the satellite is on its own path (/True Anamoly/), it plots it on a flat 2d grid. However, space is 3d, We can use trigonometry to tilt and rotate that flat grid based on our three angles. /Inclination/(i), /RAAN/(omega), and /Arguement of Perigree/(w).
+
+The Formal Math:
+
+The code performs a series of coordinate rotation matrices to transform the 2d orbital position (x_orbital, y_orbital) into 3d Earth-Centered Inertial (ECI) coordinates (X,Y,Z), (i have put the LaTeX format equation below):
+
+LaTeX Format Equation for X: $$X = x_{orbital}(\cos\omega\cos\Omega - \sin\omega\sin\Omega\cos i) - y_{orbital}(\sin\omega\cos\Omega + \cos\omega\sin\Omega\cos i)$$
+LaTeX Format Equation for Y: $$Y = x_{orbital}(\cos\omega\sin\Omega + \sin\omega\cos\Omega\cos i) - y_{orbital}(\sin\omega\sin\Omega - \cos\omega\cos\Omega\cos i)$$
+LaTeX Format Equation for Z: $$Z = x_{orbital}(\sin\omega\sin i) + y_{orbital}(\cos\omega\sin i)$$
+
+tl;dr: Imagine drawing an oval orbit on a flat piece of paper. The math engine uses the satellite's tilt (Inclination) and the direction it's facing (RAAN) to lift, spin, and angle that sheet of paper in mid-air. This converts a flat 2D drawing into an exact 3D point floating in space relative to the center of the Earth.
+
+
+### 3. Compute Architecture
+
+to be added.

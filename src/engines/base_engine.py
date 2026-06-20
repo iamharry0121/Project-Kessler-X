@@ -16,8 +16,16 @@ def processSatelliteFile(file_path):
     df['SEMI_MAJOR_AXIS'] = calculateSemiMajorAxis(df['MEAN_MOTION'])
     
     # 4. Plugging those nums in so i can get those 3d positions of the orbital elements
-    df['X'], df['Y'], df['Z'] = get3dPosition(df['SEMI_MAJOR_AXIS'], df['INCLINATION_RAD'], df['RAAN_RAD'], df['MEAN_ANOMALY_RAD'])
-    
+    df[['X', 'Y', 'Z']] = df.apply(
+        lambda row: get3dPosition(
+            row['SEMI_MAJOR_AXIS'], 
+            row['INCLINATION_RAD'], 
+            row['RAAN_RAD'], 
+            row['MEAN_ANOMALY_RAD']
+        ), 
+        axis=1, 
+        result_type='expand'
+    )
     # Quick print so you can see it working in the terminal!
     print(f"Successfully processed {file_path.name}")
     print(df[['X', 'Y', 'Z']].head())
